@@ -202,29 +202,34 @@ export default function Forca({ words }: Props) {
         </div>
       </div>
 
-      {/* Palavra */}
-      <div className="flex flex-wrap gap-2 justify-center">
-        {current.word.toUpperCase().split("").map((letter, i) => {
-          if (letter === " ") return <div key={i} className="w-4" />;
-          const revealed = guessed.has(letter) || gameOver;
-          return (
-            <div
-              key={i}
-              className={cn(
-                "w-9 h-11 border-b-2 flex items-end justify-center pb-1 text-lg font-bold transition-all duration-200",
-                revealed
+      {/* Palavra — cada palavra em grupo nowrap, quebra só entre palavras */}
+      <div className="flex flex-wrap gap-x-3 gap-y-3 justify-center">
+        {current.word.toUpperCase().split(" ").map((wordPart, wi) => (
+          <div key={wi} className="flex gap-1.5 flex-nowrap">
+            {wordPart.split("").map((letter, i) => {
+              const revealed = guessed.has(letter) || gameOver;
+              const letterSize = wordPart.length > 10 ? "w-7 text-base" : "w-9 text-lg";
+              return (
+                <div
+                  key={i}
+                  className={cn(
+                    "h-11 border-b-2 flex items-end justify-center pb-1 font-bold transition-all duration-200",
+                    letterSize,
+                    revealed
                   ? won
                     ? "text-emerald-600 border-emerald-400"
                     : lost
                     ? "text-red-500 border-red-300"
                     : "text-primary border-primary"
                   : "border-gray-300 text-transparent"
-              )}
-            >
-              {revealed ? letter : "_"}
-            </div>
-          );
-        })}
+                  )}
+                >
+                  {revealed ? letter : "_"}
+                </div>
+              );
+            })}
+          </div>
+        ))}
       </div>
 
       {/* Dica */}
