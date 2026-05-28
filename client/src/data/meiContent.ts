@@ -803,4 +803,16 @@ export const modules: Module[] = [
       { term: "Ano-calendário", definition: "Período de 1º de janeiro a 31 de dezembro — base para cálculo da receita bruta declarada na DASN." },
     ],
   },
+  {
+    id: "modulo4",
+    title: "Módulo 4",
+    subtitle: "Perguntas e Simulações",
+    icon: "🧩",
+    color: "orange",
+    explanation: [],
+    cronograma: [],
+    forcaWords: [],
+    quiz: [],
+    glossario: [],
+  },
 ];

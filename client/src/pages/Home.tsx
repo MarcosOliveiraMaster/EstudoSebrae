@@ -5,6 +5,7 @@ import Cronograma from "../components/Cronograma";
 import Forca from "../components/Forca";
 import Quiz from "../components/Quiz";
 import Glossario from "../components/Glossario";
+import SimulacaoQuizPage from "../components/SimulacaoQuiz";
 import { cn } from "../lib/utils";
 
 type Tab = "explicacao" | "cronograma" | "forca" | "quiz" | "glossario";
@@ -120,10 +121,10 @@ export default function Home() {
                 </nav>
               </div>
 
-              <div className="border-t border-border" />
+              {activeModule.id !== "modulo4" && <div className="border-t border-border" />}
 
-              {/* Seções */}
-              <div>
+              {/* Seções — oculto no Módulo 4 */}
+              <div className={cn(activeModule.id === "modulo4" && "hidden")}>
                 <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-2 px-1">
                   Seções
                 </p>
@@ -161,8 +162,8 @@ export default function Home() {
 
         {/* ── MAIN CONTENT ── */}
         <div className="flex-1 flex flex-col min-w-0">
-          {/* Mobile tab bar */}
-          <div className="lg:hidden bg-white border-b border-border sticky top-[57px] z-20 shadow-sm">
+          {/* Mobile tab bar — oculto no Módulo 4 */}
+          <div className={cn("lg:hidden bg-white border-b border-border sticky top-[57px] z-20 shadow-sm", activeModule.id === "modulo4" && "hidden")}>
             <div className="grid grid-cols-5 px-2 py-1.5 gap-1">
               {tabs.map((tab) => (
                 <button
@@ -206,6 +207,11 @@ export default function Home() {
 
           {/* Page body */}
           <main className="flex-1 px-4 sm:px-8 lg:px-10 py-8">
+            {/* Módulo 4 — Perguntas e Simulações (conteúdo próprio) */}
+            {activeModule.id === "modulo4" ? (
+              <SimulacaoQuizPage />
+            ) : (
+              <>
             {activeTab === "explicacao" && (
               <div className="max-w-2xl mx-auto lg:mx-0">
                 <Explicacao sections={activeModule.explanation} />
@@ -230,6 +236,8 @@ export default function Home() {
               <div className="max-w-2xl mx-auto lg:mx-0">
                 <Glossario terms={activeModule.glossario} />
               </div>
+            )}
+              </>
             )}
           </main>
 
