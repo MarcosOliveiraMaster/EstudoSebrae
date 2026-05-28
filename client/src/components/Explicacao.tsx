@@ -13,7 +13,7 @@ const variantStyles = {
 
 export default function Explicacao({ sections }: Props) {
   return (
-    <div className="space-y-5 max-w-3xl">
+    <div className="space-y-5 w-full">
       {sections.map((section, i) => {
         if (section.type === "title") {
           return (

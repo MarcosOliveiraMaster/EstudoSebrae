@@ -16,7 +16,7 @@ export default function Cronograma({ steps }: Props) {
   const [openStep, setOpenStep] = useState<number | null>(0);
 
   return (
-    <div className="max-w-2xl space-y-0">
+    <div className="w-full space-y-0">
       {steps.map((step, i) => {
         const isOpen = openStep === i;
         const isLast = i === steps.length - 1;

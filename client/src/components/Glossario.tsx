@@ -15,7 +15,7 @@ export default function Glossario({ terms }: Props) {
   );
 
   return (
-    <div className="max-w-2xl space-y-4">
+    <div className="w-full space-y-4">
       <input
         type="search"
         placeholder="Buscar termo..."
