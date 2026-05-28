@@ -7,32 +7,98 @@ interface Props {
 }
 
 const MAX_ERRORS = 6;
-
 const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 
-function HangmanSVG({ errors }: { errors: number }) {
+/* ── Parte animada do boneco ── */
+function AnimatedLine({
+  show, x1, y1, x2, y2, strokeWidth = 3, color = "#f97316",
+}: {
+  show: boolean; x1: number; y1: number; x2: number; y2: number;
+  strokeWidth?: number; color?: string;
+}) {
+  const len = Math.hypot(x2 - x1, y2 - y1);
   return (
-    <svg viewBox="0 0 200 220" className="w-44 h-44 mx-auto" aria-label={`Forca com ${errors} erros`}>
+    <line
+      x1={x1} y1={y1} x2={x2} y2={y2}
+      strokeWidth={strokeWidth}
+      strokeLinecap="round"
+      stroke={color}
+      style={{
+        strokeDasharray: len,
+        strokeDashoffset: show ? 0 : len,
+        transition: show ? "stroke-dashoffset 0.35s ease-out" : "none",
+      }}
+    />
+  );
+}
+
+function AnimatedCircle({ show, cx, cy, r }: { show: boolean; cx: number; cy: number; r: number }) {
+  const circ = 2 * Math.PI * r;
+  return (
+    <circle
+      cx={cx} cy={cy} r={r}
+      fill="none"
+      strokeWidth={3}
+      stroke="#f97316"
+      style={{
+        strokeDasharray: circ,
+        strokeDashoffset: show ? 0 : circ,
+        transition: show ? "stroke-dashoffset 0.4s ease-out" : "none",
+      }}
+    />
+  );
+}
+
+function HangmanSVG({ errors, lost }: { errors: number; lost: boolean }) {
+  const bodyColor = lost ? "#ef4444" : "#f97316";
+  return (
+    <svg viewBox="0 0 220 240" className="w-full h-full" aria-label={`Forca: ${errors} de ${MAX_ERRORS} erros`}>
+      {/* ── Estrutura da forca (sempre visível) ── */}
       {/* Base */}
-      <line x1="20" y1="210" x2="180" y2="210" strokeWidth="4" strokeLinecap="round" stroke="currentColor" className="text-gray-400" />
-      {/* Pole */}
-      {errors >= 1 && <line x1="60" y1="210" x2="60" y2="20" strokeWidth="4" strokeLinecap="round" stroke="currentColor" className="text-gray-600" />}
-      {/* Top bar */}
-      {errors >= 1 && <line x1="60" y1="20" x2="140" y2="20" strokeWidth="4" strokeLinecap="round" stroke="currentColor" className="text-gray-600" />}
-      {/* Rope */}
-      {errors >= 1 && <line x1="140" y1="20" x2="140" y2="50" strokeWidth="3" strokeLinecap="round" stroke="currentColor" className="text-gray-500" />}
-      {/* Head */}
-      {errors >= 2 && <circle cx="140" cy="65" r="15" fill="none" strokeWidth="3" stroke="currentColor" className="text-orange-500" />}
-      {/* Body */}
-      {errors >= 3 && <line x1="140" y1="80" x2="140" y2="140" strokeWidth="3" strokeLinecap="round" stroke="currentColor" className="text-orange-500" />}
-      {/* Left arm */}
-      {errors >= 4 && <line x1="140" y1="100" x2="110" y2="125" strokeWidth="3" strokeLinecap="round" stroke="currentColor" className="text-orange-500" />}
-      {/* Right arm */}
-      {errors >= 4 && <line x1="140" y1="100" x2="170" y2="125" strokeWidth="3" strokeLinecap="round" stroke="currentColor" className="text-orange-500" />}
-      {/* Left leg */}
-      {errors >= 5 && <line x1="140" y1="140" x2="110" y2="175" strokeWidth="3" strokeLinecap="round" stroke="currentColor" className="text-orange-500" />}
-      {/* Right leg */}
-      {errors >= 6 && <line x1="140" y1="140" x2="170" y2="175" strokeWidth="3" strokeLinecap="round" stroke="currentColor" className="text-orange-500" />}
+      <line x1="10" y1="230" x2="130" y2="230" strokeWidth="5" strokeLinecap="round" stroke="#9ca3af" />
+      {/* Poste vertical */}
+      <line x1="50" y1="230" x2="50" y2="15" strokeWidth="5" strokeLinecap="round" stroke="#6b7280" />
+      {/* Trave horizontal */}
+      <line x1="50" y1="15" x2="150" y2="15" strokeWidth="5" strokeLinecap="round" stroke="#6b7280" />
+      {/* Apoio diagonal */}
+      <line x1="50" y1="50" x2="80" y2="15" strokeWidth="3" strokeLinecap="round" stroke="#9ca3af" />
+      {/* Corda */}
+      <line x1="150" y1="15" x2="150" y2="45" strokeWidth="3" strokeLinecap="round" stroke="#9ca3af" />
+
+      {/* ── Boneco (aparece por partes) ── */}
+      {/* Cabeça — erro 1 */}
+      <AnimatedCircle show={errors >= 1} cx={150} cy={60} r={15} />
+
+      {/* Tronco — erro 2 */}
+      <AnimatedLine show={errors >= 2} x1={150} y1={75} x2={150} y2={135} color={bodyColor} />
+
+      {/* Braço esquerdo — erro 3 */}
+      <AnimatedLine show={errors >= 3} x1={150} y1={95} x2={118} y2={118} color={bodyColor} />
+
+      {/* Braço direito — erro 4 */}
+      <AnimatedLine show={errors >= 4} x1={150} y1={95} x2={182} y2={118} color={bodyColor} />
+
+      {/* Perna esquerda — erro 5 */}
+      <AnimatedLine show={errors >= 5} x1={150} y1={135} x2={120} y2={172} color={bodyColor} />
+
+      {/* Perna direita — erro 6 */}
+      <AnimatedLine show={errors >= 6} x1={150} y1={135} x2={180} y2={172} color={bodyColor} />
+
+      {/* Rosto triste quando perde */}
+      {lost && (
+        <>
+          <circle cx={144} cy={56} r={2} fill="#ef4444" />
+          <circle cx={156} cy={56} r={2} fill="#ef4444" />
+          <path d="M144 67 Q150 62 156 67" fill="none" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" />
+        </>
+      )}
+
+      {/* Rosto feliz quando está bem (0 erros) */}
+      {errors === 0 && (
+        <text x="150" y="230" textAnchor="middle" fontSize="13" fill="#d1d5db">
+          ↑ adivinhe!
+        </text>
+      )}
     </svg>
   );
 }
@@ -44,7 +110,7 @@ export default function Forca({ words }: Props) {
   const [hintUsed, setHintUsed] = useState(false);
 
   const current = words[wordIndex];
-  const word = current.word.replace(/\s/g, "");
+  const word = current.word.toUpperCase().replace(/\s/g, "");
   const letters = current.word.toUpperCase().split("");
 
   const wrong = Array.from(guessed).filter((l) => !word.includes(l));
@@ -68,43 +134,75 @@ export default function Forca({ words }: Props) {
     setHintUsed(false);
   };
 
-  const revealHint = () => {
-    setShowHint(true);
-    setHintUsed(true);
-  };
-
   return (
-    <div className="flex flex-col items-center gap-6 max-w-xl mx-auto">
+    <div className="flex flex-col items-center gap-5 max-w-xl mx-auto">
       {/* Header */}
       <div className="w-full flex items-center justify-between">
-        <div className="text-sm text-muted-foreground">
+        <span className="text-sm text-muted-foreground">
           Palavra {wordIndex + 1} / {words.length}
-        </div>
-        <span className="text-xs bg-secondary text-secondary-foreground px-2 py-1 rounded-full">
+        </span>
+        <span className="text-xs bg-secondary px-2 py-1 rounded-full text-secondary-foreground">
           {current.category}
         </span>
       </div>
 
-      {/* Hangman drawing */}
-      <div className={cn("rounded-2xl p-4 bg-secondary/40 w-full", lost && "bg-red-50")}>
-        <HangmanSVG errors={errors} />
-        <div className="flex justify-center gap-1 mt-2">
-          {Array.from({ length: MAX_ERRORS }).map((_, i) => (
-            <div
-              key={i}
-              className={cn(
-                "w-2 h-2 rounded-full transition-colors",
-                i < errors ? "bg-red-400" : "bg-gray-200"
-              )}
-            />
-          ))}
+      {/* Painel principal: forca + letras erradas */}
+      <div className={cn(
+        "w-full rounded-2xl border-2 transition-colors overflow-hidden",
+        lost ? "border-red-200 bg-red-50" : won ? "border-emerald-200 bg-emerald-50" : "border-border bg-white"
+      )}>
+        <div className="flex gap-0 items-stretch">
+          {/* SVG da forca */}
+          <div className="flex-1 min-w-0" style={{ height: "200px" }}>
+            <HangmanSVG errors={errors} lost={lost} />
+          </div>
+
+          {/* Painel direito: erros + letras erradas */}
+          <div className="w-28 sm:w-32 flex-shrink-0 border-l border-border/50 flex flex-col items-center justify-center gap-3 p-3 bg-secondary/20">
+            {/* Contador */}
+            <div className="text-center">
+              <p className="text-2xl font-bold leading-none" style={{ color: errors > 0 ? "#ef4444" : "#9ca3af" }}>
+                {errors}
+              </p>
+              <p className="text-[10px] text-muted-foreground leading-tight">
+                de {MAX_ERRORS}<br />erros
+              </p>
+            </div>
+
+            {/* Bolinhas de vida */}
+            <div className="grid grid-cols-3 gap-1">
+              {Array.from({ length: MAX_ERRORS }).map((_, i) => (
+                <div
+                  key={i}
+                  className={cn(
+                    "w-4 h-4 rounded-full transition-all duration-300",
+                    i < errors ? "bg-red-400 scale-90" : "bg-gray-200"
+                  )}
+                />
+              ))}
+            </div>
+
+            {/* Letras erradas */}
+            {wrong.length > 0 && (
+              <div className="w-full">
+                <p className="text-[9px] text-muted-foreground uppercase tracking-wider text-center mb-1">Erradas</p>
+                <div className="flex flex-wrap gap-1 justify-center">
+                  {wrong.map((l) => (
+                    <span
+                      key={l}
+                      className="w-5 h-5 flex items-center justify-center rounded text-[10px] font-bold bg-red-100 text-red-500"
+                    >
+                      {l}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
-        <p className="text-center text-xs text-muted-foreground mt-1">
-          {errors} / {MAX_ERRORS} erros
-        </p>
       </div>
 
-      {/* Word display */}
+      {/* Palavra */}
       <div className="flex flex-wrap gap-2 justify-center">
         {current.word.toUpperCase().split("").map((letter, i) => {
           if (letter === " ") return <div key={i} className="w-4" />;
@@ -113,7 +211,7 @@ export default function Forca({ words }: Props) {
             <div
               key={i}
               className={cn(
-                "w-9 h-11 border-b-2 flex items-end justify-center pb-1 text-lg font-bold transition-all",
+                "w-9 h-11 border-b-2 flex items-end justify-center pb-1 text-lg font-bold transition-all duration-200",
                 revealed
                   ? won
                     ? "text-emerald-600 border-emerald-400"
@@ -129,11 +227,11 @@ export default function Forca({ words }: Props) {
         })}
       </div>
 
-      {/* Hint section */}
+      {/* Dica */}
       <div className="w-full">
         {!showHint ? (
           <button
-            onClick={revealHint}
+            onClick={() => { setShowHint(true); setHintUsed(true); }}
             disabled={gameOver}
             className={cn(
               "w-full py-2 px-4 rounded-xl text-sm font-medium border transition-all",
@@ -151,29 +249,25 @@ export default function Forca({ words }: Props) {
         )}
       </div>
 
-      {/* Game over message */}
+      {/* Game over */}
       {gameOver && (
-        <div
-          className={cn(
-            "w-full rounded-xl p-4 text-center",
-            won ? "bg-emerald-50 text-emerald-800" : "bg-red-50 text-red-800"
-          )}
-        >
+        <div className={cn(
+          "w-full rounded-xl p-4 text-center",
+          won ? "bg-emerald-50 text-emerald-800 border border-emerald-200" : "bg-red-50 text-red-800 border border-red-200"
+        )}>
           {won ? (
             <p className="font-bold text-lg">🎉 Parabéns! Você acertou!</p>
           ) : (
             <>
               <p className="font-bold text-lg">😔 Não foi dessa vez!</p>
-              <p className="text-sm mt-1">
-                A palavra era: <strong>{current.word}</strong>
-              </p>
+              <p className="text-sm mt-1">A palavra era: <strong>{current.word}</strong></p>
             </>
           )}
           <p className="text-sm mt-2 opacity-80">{current.hint}</p>
         </div>
       )}
 
-      {/* Keyboard */}
+      {/* Teclado */}
       {!gameOver && (
         <div className="flex flex-wrap gap-1.5 justify-center max-w-sm">
           {ALPHABET.map((letter) => {
@@ -199,7 +293,7 @@ export default function Forca({ words }: Props) {
         </div>
       )}
 
-      {/* Next / Play again */}
+      {/* Próxima / Pular */}
       <button
         onClick={nextWord}
         className="w-full py-3 rounded-xl bg-primary text-white font-semibold hover:bg-primary/90 transition-all active:scale-[0.98] shadow-md"
