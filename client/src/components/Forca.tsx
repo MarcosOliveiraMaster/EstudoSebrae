@@ -47,7 +47,7 @@ export default function Forca({ words }: Props) {
   const word = current.word.replace(/\s/g, "");
   const letters = current.word.toUpperCase().split("");
 
-  const wrong = [...guessed].filter((l) => !word.includes(l));
+  const wrong = Array.from(guessed).filter((l) => !word.includes(l));
   const errors = wrong.length;
   const won = letters.filter((l) => l !== " ").every((l) => guessed.has(l));
   const lost = errors >= MAX_ERRORS;
@@ -56,7 +56,7 @@ export default function Forca({ words }: Props) {
   const guess = useCallback(
     (letter: string) => {
       if (gameOver || guessed.has(letter)) return;
-      setGuessed((prev) => new Set([...prev, letter]));
+      setGuessed((prev) => new Set(Array.from(prev).concat(letter)));
     },
     [gameOver, guessed]
   );

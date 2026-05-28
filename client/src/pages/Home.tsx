@@ -163,20 +163,20 @@ export default function Home() {
         <div className="flex-1 flex flex-col min-w-0">
           {/* Mobile tab bar */}
           <div className="lg:hidden bg-white border-b border-border sticky top-[57px] z-20 shadow-sm">
-            <div className="flex overflow-x-auto px-3 py-2 gap-1.5">
+            <div className="grid grid-cols-5 px-2 py-1.5 gap-1">
               {tabs.map((tab) => (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
                   className={cn(
-                    "flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold whitespace-nowrap flex-shrink-0 transition-all",
+                    "flex flex-col items-center justify-center gap-0.5 py-1.5 px-1 rounded-lg transition-all",
                     activeTab === tab.id
                       ? "bg-primary text-white shadow-sm"
                       : "text-muted-foreground hover:text-foreground hover:bg-secondary"
                   )}
                 >
-                  <span>{tab.icon}</span>
-                  <span>{tab.label}</span>
+                  <span className="text-lg leading-none">{tab.icon}</span>
+                  <span className="text-[10px] font-semibold leading-none">{tab.label}</span>
                 </button>
               ))}
             </div>
